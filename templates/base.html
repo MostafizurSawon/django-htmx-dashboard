@@ -1,0 +1,44 @@
+{% load tailwind_cli %}
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel Management SaaS | Dashboard</title>
+    
+    <!-- <script src="https://cdn.tailwindcss.com"></script>  -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {% tailwind_css %}
+</head>
+
+<body
+    x-data="{ page: 'ecommerce', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-init="darkMode = JSON.parse(localStorage.getItem('darkMode')); $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+    :class="{'dark bg-gray-900': darkMode === true}"
+    hx-boost="true"
+>
+    <div class="flex h-screen overflow-hidden">
+        
+        {% include 'partials/sidebar.html' %}
+
+        <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
+            
+            {% include 'partials/header.html' %}
+
+            <main id="main-content">
+                {% block content %}
+                {% endblock %}
+            </main>
+            
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
+    <script defer src="{% static 'js/index.js' %}"></script>
+</body>
+</html>
