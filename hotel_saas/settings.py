@@ -31,7 +31,11 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    "unfold",                     # ← এটা সবার আগে রাখতে হবে!
+    "unfold.contrib.filters",     # optional (যদি advanced filter লাগে)
+    "unfold.contrib.forms",       # optional
+    "unfold.contrib.inlines",     # optional
+    "django.contrib.admin",
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -39,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_tailwind_cli',
     'django_htmx',
+    'apps.site_settings',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +137,65 @@ TAILWIND_CLI_DIST_CSS = 'css/style.css'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+# Unfold settings
+# settings.py (শেষের দিকে)
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD = {
+    "SITE_TITLE": "Mostafizur Admin",
+    "SITE_HEADER": "Mostafizur Panel",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+
+    "SIDEBAR": {
+        "show_search": True,                    # সাইডবারে সার্চ বক্স দেখাবে
+        "show_all_applications": False,         # শুধু custom navigation দেখাবে
+        
+        "navigation": [
+            # --- প্রথম সেকশন (Quick Links) ---
+            {
+                "title": _("Quick Links"),
+                "separator": True,              # উপরে separator line
+                "collapsible": True,            # ক্লিক করে collapse করা যাবে
+                "items": [
+                    {
+                        "title": _("Dashboard"),
+                        "icon": "dashboard",            
+                        "link": reverse_lazy("admin:index"),  
+                        "badge": "new",                 
+                        "badge_variant": "info",        
+                    },
+                ],
+            },
+
+            # --- দ্বিতীয় সেকশন (Site Settings ডিভাইডার হিসেবে কাজ করবে) ---
+            {
+                "title": _("Site Settings"),    # এটি মেনুর মাঝখানে হেডিং হিসেবে দেখাবে
+                "separator": True,              # এটি হেডিংয়ের উপরে সুন্দর একটি দাগ (divider) তৈরি করবে
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("All Contacts"),
+                        "icon": "contact_page",
+                        # হার্ডকোডেড লিংকের বদলে reverse_lazy সবচেয়ে সেফ
+                        "link": reverse_lazy("admin:site_settings_contact_changelist"),
+                    },
+                    # আরও আইটেম চাইলে যোগ করতে পারেন, যেমন:
+                    # {
+                    #     "title": _("Site Config"),
+                    #     "icon": "settings",
+                    #     "link": reverse_lazy("admin:site_settings_siteconfig_changelist"),
+                    # },
+                ],
+            },
+        ],
+    },
+
+    # Optional: Dark mode
+    "DARK_MODE": "auto",  # "auto" → সিস্টেমের উপর ডিপেন্ড করে, অথবা True/False
+}
