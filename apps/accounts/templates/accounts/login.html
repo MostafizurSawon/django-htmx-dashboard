@@ -1,0 +1,151 @@
+{% load tailwind_cli %}
+{% load static %}
+<!doctype html>
+<html lang="en" 
+      x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" 
+      :class="{ 'dark': darkMode }"
+      class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In | Hotel SaaS</title>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Tailwind -->
+    {% tailwind_css %}
+    
+    <!-- Google Fonts: Inter (clean & modern) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="font-inter antialiased bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 min-h-screen flex flex-col">
+    
+    <!-- Main Hero Section - Full viewport height -->
+    <section class="flex-1 flex items-center justify-center px-6 py-12 lg:px-8 xl:px-12">
+        <div class="max-w-7xl w-full mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16 items-center">
+                
+                <!-- Left: Hero Text - Bold & Engaging -->
+                <div class="space-y-8 text-center lg:text-left">
+                    <div class="inline-flex items-center px-5 py-2 bg-blue-100/70 dark:bg-blue-900/40 rounded-full text-blue-700 dark:text-blue-300 text-sm font-semibold uppercase tracking-wider">
+                        Building the Future of Hospitality
+                    </div>
+                    
+                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-gray-900 dark:text-white tracking-tight">
+                        Revolutionize Your Hotel Business
+                    </h1>
+                    
+                    <p class="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto lg:mx-0 leading-relaxed">
+                        Engage guests smarter, manage operations faster, and grow revenue intuitively. Join thousands of hotels transforming with Hotel SaaS.
+                    </p>
+                    
+                    <!-- Optional subtle trust badges or stats -->
+                    <div class="flex flex-wrap justify-center lg:justify-start gap-6 mt-8 opacity-90">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">500+</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Hotels</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">98%</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Uptime</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">24/7</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Support</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Login Card - Premium & Focused -->
+                <div class="w-full max-w-md lg:max-w-lg mx-auto lg:mx-0">
+                    <div class="bg-white dark:bg-gray-800/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8 lg:p-10 transition-all duration-500 hover:shadow-3xl hover:-translate-y-2">
+                        <div class="text-center mb-10">
+                            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
+                                Welcome Back
+                            </h2>
+                            <p class="mt-3 text-gray-500 dark:text-gray-400">
+                                Sign in to access your dashboard
+                            </p>
+                        </div>
+
+                        <form method="POST" class="space-y-6">
+                            {% csrf_token %}
+
+                            <!-- Identifier / Email -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Email or Phone Number
+                                </label>
+                                <input 
+                                    type="text" 
+                                    name="identifier" 
+                                    required
+                                    class="w-full px-5 py-4 bg-gray-50/70 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 shadow-inner"
+                                    placeholder="example@hotel.com or 017xxxxxxxx"
+                                >
+                            </div>
+
+                            <!-- Password with Toggle -->
+                            <div x-data="{ showPassword: false }">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Password
+                                </label>
+                                <div class="relative">
+                                    <input 
+                                        :type="showPassword ? 'text' : 'password'" 
+                                        name="password" 
+                                        required
+                                        class="w-full px-5 py-4 bg-gray-50/70 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none transition-all duration-300 shadow-inner pr-14"
+                                        placeholder="••••••••"
+                                    >
+                                    <button 
+                                        type="button" 
+                                        @click="showPassword = !showPassword"
+                                        class="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                    >
+                                        <svg x-show="!showPassword" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        <svg x-show="showPassword" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.976 9.976 0 012.146-3.525m11.105 1.458A4.5 4.5 0 0115 12m-2.435-5.635a10.023 10.023 0 00-2.565-.365c-4.477 0-8.268 2.943-9.542 7 1.274 4.057 5.064 7 9.542 7 1.274 0 2.441-.183 3.525-.512M21 21l-3.5-3.5M3 3l3.5 3.5" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Login Button -->
+                            <button 
+                                type="submit"
+                                class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-blue-500/40 active:scale-95"
+                            >
+                                Sign In
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Optional subtle footer -->
+    <footer class="py-6 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800">
+        © {{ current_year|default:"2026" }} Hotel SaaS. All rights reserved.
+    </footer>
+
+    <!-- Dark Mode Toggle Button (floating) -->
+    <button 
+        @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)"
+        class="fixed bottom-8 right-8 p-4 bg-gray-800/90 dark:bg-gray-200/90 text-white dark:text-gray-900 rounded-full shadow-2xl hover:scale-110 transition-transform duration-300 backdrop-blur-sm z-50"
+        title="Toggle Dark Mode"
+    >
+        <svg x-show="!darkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+        <svg x-show="darkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+    </button>
+</body>
+</html>

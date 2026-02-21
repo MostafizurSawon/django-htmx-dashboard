@@ -2,6 +2,17 @@ from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline, StackedInline  
 from .models import Contact
 
+# site_settings/apps.py
+from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
+
+class SiteSettingsConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'site_settings'  # তোমার app_label
+
+    verbose_name = _(" ")          # ← খালি স্পেস বা শুধু "" দাও → header অদৃশ্য/খালি হবে
+    # অথবা verbose_name = ""       # পুরোপুরি খালি
+    # অথবা verbose_name = _("Site Settings")  # যদি চাও এই নাম দেখাক (তোমার পছন্দ)
 
 @admin.register(Contact)
 class ContactAdmin(ModelAdmin):

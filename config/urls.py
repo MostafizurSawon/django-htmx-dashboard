@@ -1,5 +1,5 @@
 """
-URL configuration for hotel_saas project.
+URL configuration for config project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -17,10 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from .import views
+from apps.billing.views import billing_warning_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('accounts/', include('apps.accounts.urls')),
+    # path('dashboard/', views.dashboard, name='dashboard'),
+    # সাবস্ক্রিপশন শেষ হলে ওয়ার্নিং পেজ
+    path('billing-warning/', billing_warning_view, name='billing_warning'),
+    
+    # আপনার Hotels অ্যাপের সব URL (যেখানে ড্যাশবোর্ড আছে)
+    path('', include('apps.hotels.urls')),
 
     path('dashboard/', include('apps.site_settings.urls'))
 ]
