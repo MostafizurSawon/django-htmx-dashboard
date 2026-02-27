@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-s&7h5!l0g_kmlyvvc4$_tgl2=l%%@w+b&wq14+!!_y)_y8xhar
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"]  # production-এ এটা ঠিক করো → ['yourdomain.com', '.vercel.app'] ইত্যাদি
 
 
 # Application definition
@@ -58,6 +58,7 @@ LOGOUT_REDIRECT_URL = 'login'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -67,12 +68,19 @@ MIDDLEWARE = [
     'apps.billing.middleware.SubscriptionCheckMiddleware',
 ]
 
+# Static files storage (optional কিন্তু ভালো)
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [BASE_DIR / 'templates'],  # list হিসেবে দিলাম (তোমার 'templates' ছিল string)
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,13 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-# TIME_ZONE = 'UTC'
-
-# USE_I18N = True
-
-# USE_TZ = True
-
-# config/settings.py
 TIME_ZONE = 'Asia/Dhaka'
 USE_I18N = True
 USE_TZ = True
@@ -137,16 +138,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
-# এই লাইনটি যোগ করুন (জ্যাঙ্গোকে স্ট্যাটিক ফোল্ডার চেনানোর জন্য)
+# তোমার custom static ফাইলগুলো এখান থেকে নেবে
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
-# Tailwind CLI-কে বলে দিন আপনার input.css কোথায় আছে এবং output কোথায় হবে
+# Production-এ collectstatic যেখানে সব ফাইল কপি করবে (এটা না থাকলে error আসে)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Optional: production-এ cache-busting + compression (whitenoise install করে ব্যবহার করলে ভালো)
+# pip install whitenoise
+# STORAGES = {
+#     "staticfiles": {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     },
+# }
+
+# django-tailwind-cli settings
+# input file: static/css/input.css → BASE_DIR থেকে relative
 TAILWIND_CLI_SRC_CSS = 'static/css/input.css'
+
+# output file: static/css/style.css → STATICFILES_DIRS[0] থেকে relative (অর্থাৎ css/style.css হিসেবে collect হবে)
 TAILWIND_CLI_DIST_CSS = 'css/style.css'
+
+# Optional: production-এ minified চাইলে
+# TAILWIND_CLI_MINIFIED = True
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -166,7 +185,7 @@ UNFOLD = {
 
     "SIDEBAR": {
         "show_search": True,
-        "show_all_applications": False, # এটি False থাকায় ম্যানুয়ালি মেনু অ্যাড করতে হচ্ছে
+        "show_all_applications": True,  # False রাখলে শুধু নিচের navigation দেখাবে
 
         "navigation": [
             {
@@ -178,13 +197,19 @@ UNFOLD = {
                         "title": _("Dashboard"),
                         "icon": "dashboard",
                         "link": reverse_lazy("admin:index"),
-                        "badge": "new",
-                        "badge_variant": "info",
+                        "badge": "home",
+                        "badge_variant": "success",  # primary, success, info, warning, danger
                     },
+                    # Optional: যদি কোনো custom admin view থাকে
+                    # {
+                    #     "title": _("Reports"),
+                    #     "icon": "bar_chart",
+                    #     "link": "/admin/custom-reports/",  # custom URL
+                    # },
                 ],
             },
 
-            # ১. Hotel Management সেকশন
+            # Hotel Management
             {
                 "title": _("Hotel Management"),
                 "separator": True,
@@ -192,13 +217,39 @@ UNFOLD = {
                 "items": [
                     {
                         "title": _("All Hotels"),
-                        "icon": "apartment", # Material Symbols
+                        "icon": "apartment",
                         "link": reverse_lazy("admin:hotels_hotel_changelist"),
                     },
+                    # যদি আরও মডেল থাকে hotels অ্যাপে (যেমন Room, Review)
+                    # {
+                    #     "title": _("Rooms"),
+                    #     "icon": "meeting_room",
+                    #     "link": reverse_lazy("admin:hotels_room_changelist"),
+                    # },
                 ],
             },
 
-            # ২. Billing & Subscriptions সেকশন
+            # Site Settings (Contact + অন্যান্য যদি থাকে)
+            {
+                "title": _("Site Settings"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Contact Messages"),
+                        "icon": "contact_mail",
+                        "link": reverse_lazy("admin:site_settings_contact_changelist"),
+                    },
+                    # যদি আরও কিছু মডেল থাকে site_settings-এ (যেমন FAQ, Setting)
+                    # {
+                    #     "title": _("General Settings"),
+                    #     "icon": "settings",
+                    #     "link": reverse_lazy("admin:site_settings_setting_changelist"),
+                    # },
+                ],
+            },
+
+            # Billing & Subscriptions (ইতিমধ্যে আছে, আরও যোগ করতে পারো)
             {
                 "title": _("Billing & Subscriptions"),
                 "separator": True,
@@ -214,10 +265,16 @@ UNFOLD = {
                         "icon": "card_membership",
                         "link": reverse_lazy("admin:billing_subscription_changelist"),
                     },
+                    # Optional
+                    # {
+                    #     "title": _("Payments"),
+                    #     "icon": "payments",
+                    #     "link": reverse_lazy("admin:billing_payment_changelist"),
+                    # },
                 ],
             },
 
-            # ৩. Accounts / Users সেকশন
+            # User Accounts
             {
                 "title": _("User Accounts"),
                 "separator": True,
@@ -227,6 +284,20 @@ UNFOLD = {
                         "title": _("Users"),
                         "icon": "group",
                         "link": reverse_lazy("admin:accounts_user_changelist"),
+                    },
+                ],
+            },
+
+            # Optional: শেষে Logs / History / অন্যান্য
+            {
+                "title": _("System"),
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                    {
+                        "title": _("Recent Actions"),
+                        "icon": "history",
+                        "link": lambda request: reverse_lazy("admin:index") + "#history",
                     },
                 ],
             },
